@@ -51,45 +51,13 @@ class GeneTool {
         }
     }
 
-    var map_gene = mutableMapOf<Int, Gene>()
+    val map_gene = mutableMapOf<Int, Gene>()
 
     constructor() {
         //a->1  A->2
-        var num = 1
-        map_gene[num] = Gene(TYPE0, num, "mark_snow", "雪花")
-        num += 2
-        map_gene[num] = Gene(TYPE0, num, "giant", "巨人")
-        num += 2
-        map_gene[num] = Gene(TYPE0, num, "tangelo", "橘柚")
-        num += 2
+        for (i in 0 until type_tab.size)
+            map_gene[i * 2 + 1] = Gene(type_tab[i][0] as Int, i * 2 + 1, type_tab[i][1] as String, type_tab[i][2] as String)
 
-        map_gene[num] = Gene(TYPE1, num, "lemon_frost", "柠檬霜")
-        num += 2
-        map_gene[num] = Gene(TYPE1, num, "white_yellow", "白黄")
-        num += 2
-        map_gene[num] = Gene(TYPE1, num, "enigma", "谜")
-        num += 2
-        map_gene[num] = Gene(TYPE1, num, "pastel", "蜡笔")
-        num += 2
-
-
-        map_gene[num] = Gene(TYPE2, num, "tremper", "川普白化")
-        num += 2
-        map_gene[num] = Gene(TYPE2, num, "bell", "贝尔白化")
-        num += 2
-        map_gene[num] = Gene(TYPE2, num, "rainwater", "雨水白化")
-        num += 2
-        map_gene[num] = Gene(TYPE2, num, "blizzard", "暴风雪")
-        num += 2
-        map_gene[num] = Gene(TYPE2, num, "eclipse", "日蚀")
-        num += 2
-        map_gene[num] = Gene(TYPE2, num, "marble_eye", "大理石眼")
-        num += 2
-        map_gene[num] = Gene(TYPE2, num, "noir_desir", "欲望黑眼")
-        num += 2
-        map_gene[num] = Gene(TYPE2, num, "murphy_patternless", "青白化")
-        num += 2
-        map_gene[num] = Gene(TYPE3, num, "high_yellow", "高黄")
     }
 
 
@@ -236,59 +204,69 @@ class GeneTool {
         }
         if (str.isEmpty()) str = "高黄"
 
-        val wysrde = arrayOf("雪花", "白黄", "贝尔白化", "日蚀", "谜")//方解石
-        val srde = arrayOf("雪花", "贝尔白化", "日蚀", "谜") //潜行
-        val ssbe = arrayOf("超级雪花", "贝尔白化", "谜") //贝尔斑点狗
-        val wk = arrayOf("贝尔白化", "暴风雪", "日蚀") //白骑士
-        val bbb = arrayOf("贝尔白化", "暴风雪") //贝尔超级暴风雪
-        val ldz = arrayOf("贝尔白化", "日蚀", "青白化")//掠夺者
-        val rd = arrayOf("贝尔白化", "日蚀") //雷达
-        val aurora = arrayOf("白黄", "贝尔白化")//极光
-
-        val saee = arrayOf("雪花", "川普白化", "日蚀", "谜")//甜甜圈
-        val db = arrayOf("川普白化", "暴风雪", "日蚀") //恶魔白酒
-        val bb = arrayOf("川普白化", "暴风雪") //超级暴风雪
-        val ember = arrayOf("川普白化", "日蚀", "青白化")//灰烬
-        val ra = arrayOf("川普白化", "日蚀") //红眼暴龙
-
-        val srwee = arrayOf("雪花", "雨水白化", "日蚀", "谜")//水晶
-        val xf = arrayOf("雨水白化", "日蚀", "青白化")//旋风
-        val ty = arrayOf("雨水白化", "日蚀")//台风
-
-        val bj = arrayOf("超级雪花", "青白化")//超级白金
-        val un = arrayOf("超级雪花", "白黄", "日蚀")//宇宙
-        val ssecl = arrayOf("超级雪花", "日蚀")//银河
-        val shadow = arrayOf("雪花", "白黄", "日蚀")//影
-        val back_hole = arrayOf("雪花", "日蚀", "谜")//黑洞
-        val bananaBli = arrayOf("暴风雪", "青白化")//香蕉暴风雪
-
-        val arr = arrayOf(wysrde, srde, ssbe, wk, bbb, ldz, rd, aurora,
-                saee, db, bb, ember, ra,
-                srwee, xf, ty,
-                bj, un, ssecl, shadow, back_hole, bananaBli)
-        val arr_str = arrayOf("方解石", "潜行", "贝尔斑点狗", "白骑士", "贝尔超级暴风雪", "掠夺者", "雷达", "极光",
-                "甜甜圈", "恶魔白酒", "超级暴风雪", "灰烬", "红眼暴龙",
-                "水晶", "旋风", "台风",
-                "超级白金", "宇宙", "银河", "影", "黑洞", "香蕉暴风雪")
-
-        for (i in 0 until arr.size) {
+        for (i in 0 until easy_name.size) {
             var f = true
-            for (j in 0 until arr[i].size) {
-                if (!str.contains(arr[i][j]) || str.contains("隐" + arr[i][j])) {
+            for (j in 1 until easy_name[i].size)
+                if (!str.contains(easy_name[i][j]) || str.contains("隐" + easy_name[i][j])) {
                     f = false
                     break
                 }
-            }
-
             if (f) {
-                for (k in 0 until arr[i].size) str = str.replace(arr[i][k] + " ", "")
-                str += arr_str[i]
+                for (k in 0 until easy_name[i].size) str = str.replace(easy_name[i][k] + " ", "")
+                str += easy_name[i][0]
                 break
             }
         }
-
-
-
         return str
     }
+
+
+    private val type_tab = arrayOf(
+            arrayOf(TYPE0, "mark_snow", "雪花"),
+            arrayOf(TYPE0, "giant", "巨人"),
+            arrayOf(TYPE0, "tangelo", "橘柚"),
+
+            arrayOf(TYPE1, "lemon_frost", "柠檬霜"),
+            arrayOf(TYPE1, "white_yellow", "白黄"),
+            arrayOf(TYPE1, "enigma", "谜"),
+            arrayOf(TYPE1, "pastel", "蜡笔"),
+
+            arrayOf(TYPE2, "tremper", "川普白化"),
+            arrayOf(TYPE2, "bell", "贝尔白化"),
+            arrayOf(TYPE2, "rainwater", "雨水白化"),
+            arrayOf(TYPE2, "blizzard", "暴风雪"),
+            arrayOf(TYPE2, "eclipse", "日蚀"),
+            arrayOf(TYPE2, "marble_eye", "大理石眼"),
+            arrayOf(TYPE2, "noir_desir", "欲望黑眼"),
+            arrayOf(TYPE2, "murphy_patternless", "青白化"),
+
+            arrayOf(TYPE3, "high_yellow", "高黄")
+    )
+    private val easy_name = arrayOf(
+            arrayOf("方解石", "雪花", "白黄", "贝尔白化", "日蚀", "谜"),//方解石
+            arrayOf("潜行", "雪花", "贝尔白化", "日蚀", "谜"),//潜行
+            arrayOf("贝尔斑点狗", "超级雪花", "贝尔白化", "谜"),//贝尔斑点狗
+            arrayOf("白骑士", "贝尔白化", "暴风雪", "日蚀"), //白骑士
+            arrayOf("贝尔超级暴风雪", "贝尔白化", "暴风雪"),//贝尔超级暴风雪
+            arrayOf("掠夺者", "贝尔白化", "日蚀", "青白化"),//掠夺者
+            arrayOf("雷达", "贝尔白化", "日蚀"),//雷达
+            arrayOf("极光", "白黄", "贝尔白化"),//极光
+
+            arrayOf("甜甜圈", "雪花", "川普白化", "日蚀", "谜"),//甜甜圈
+            arrayOf("恶魔白酒", "川普白化", "暴风雪", "日蚀"), //恶魔白酒
+            arrayOf("超级暴风雪", "川普白化", "暴风雪"),//超级暴风雪
+            arrayOf("灰烬", "川普白化", "日蚀", "青白化"),//灰烬
+            arrayOf("红眼暴龙", "川普白化", "日蚀"), //红眼暴龙
+
+            arrayOf("水晶", "雪花", "雨水白化", "日蚀", "谜"),//水晶
+            arrayOf("旋风", "雨水白化", "日蚀", "青白化"),//旋风
+            arrayOf("台风", "雨水白化", "日蚀"),//台风
+
+            arrayOf("超级白金", "超级雪花", "青白化"),//超级白金
+            arrayOf("宇宙", "超级雪花", "白黄", "日蚀"),//宇宙
+            arrayOf("银河", "超级雪花", "日蚀"),//银河
+            arrayOf("影", "雪花", "白黄", "日蚀"),//影
+            arrayOf("黑洞", "雪花", "日蚀", "谜"),//黑洞
+            arrayOf("香蕉暴风雪", "暴风雪", "青白化")//香蕉暴风雪
+    )
 }

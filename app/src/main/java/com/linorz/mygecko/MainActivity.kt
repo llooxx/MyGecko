@@ -44,10 +44,31 @@ class MainActivity : AppCompatActivity() {
             }
         }
         if (father_genes.isNotEmpty() && mother_genes.isNotEmpty()) {
-            var str = ""
+            val probability_list = arrayListOf<Double>()
+            val str_list = arrayListOf<String>()
+            //获得子基因
             GeneTool().getInstance().getGeneration(father_genes, mother_genes).forEach {
-                str += (it.probability * 100).toString() + "% " + GeneTool().getInstance().printGenesCh(it.list_genes) + "\n\n"
+                probability_list.add(it.probability)
+                str_list.add(GeneTool().getInstance().printGenesCh(it.list_genes) + "\n\n")
             }
+            //合并相同基因
+            var i = 0
+            while (i < str_list.size) {
+                var j = i + 1
+                while (j < str_list.size) {
+                    if (str_list[i] == str_list[j]) {
+                        probability_list[i] = probability_list[i] + probability_list[j]
+                        probability_list.removeAt(j)
+                        str_list.removeAt(j)
+                    }
+                    j++
+                }
+                i++
+            }
+            var str = ""
+            for (i in 0 until str_list.size)
+                str += (probability_list[i] * 100).toString() + "% " + str_list[i]
+
             main_chid_gene.text = str
         }
     }
