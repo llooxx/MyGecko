@@ -212,8 +212,17 @@ class GeneTool {
                     break
                 }
             if (f) {
-                for (k in 0 until easy_name[i].size) str = str.replace(easy_name[i][k] + " ", "")
-                str += easy_name[i][0]
+                var ff = false //超级雪花判断
+                for (k in 0 until easy_name[i].size) {
+                    if (easy_name[i][k] == "雪花" && str.contains("超级雪花")) {
+                        ff = true
+                        str = str.replace("超级雪花 ", "")
+                    } else
+                        str = str.replace(easy_name[i][k] + " ", "")
+
+                }
+                str += if (ff) "超级" + easy_name[i][0]
+                else easy_name[i][0]
                 break
             }
         }
@@ -225,8 +234,8 @@ class GeneTool {
             arrayOf(TYPE0, "mark_snow", "雪花"),
             arrayOf(TYPE0, "giant", "巨人"),
             arrayOf(TYPE0, "tangelo", "橘柚"),
-
-            arrayOf(TYPE1, "lemon_frost", "柠檬霜"),
+            arrayOf(TYPE0, "lemon_frost", "柠檬霜"),
+            
             arrayOf(TYPE1, "white_yellow", "白黄"),
             arrayOf(TYPE1, "enigma", "谜"),
             arrayOf(TYPE1, "pastel", "蜡笔"),
