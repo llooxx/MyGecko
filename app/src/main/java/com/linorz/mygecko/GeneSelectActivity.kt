@@ -24,16 +24,16 @@ class GeneSelectActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_gene_select)
         val geneTool = GeneTool().getInstance()
-        val color_white = resources.getColor(android.R.color.white, null)
-        val color_black = resources.getColor(android.R.color.black, null)
+        val color_white = resources.getColor(android.R.color.white)
+        val color_black = resources.getColor(android.R.color.black)
         for ((_, k) in geneTool.map_gene) {
-            val item = layoutInflater.inflate(R.layout.gene_selet_item, null)
+            val item = layoutInflater.inflate(R.layout.gene_selet_item,null)
             item.gene_selet_item_left.setOnClickListener {
                 if (item.gene_selet_item_left.currentTextColor == color_white) {
                     item.gene_selet_item_left.setBackgroundColor(android.R.color.transparent)
                     item.gene_selet_item_left.setTextColor(color_black)
                 } else {
-                    item.gene_selet_item_left.setBackgroundColor(resources.getColor(R.color.colorPrimary, null))
+                    item.gene_selet_item_left.setBackgroundColor(resources.getColor(R.color.colorPrimary))
                     item.gene_selet_item_left.setTextColor(color_white)
                     item.gene_selet_item_right.setBackgroundColor(android.R.color.transparent)
                     item.gene_selet_item_right.setTextColor(color_black)
@@ -44,7 +44,7 @@ class GeneSelectActivity : AppCompatActivity() {
                     item.gene_selet_item_right.setBackgroundColor(android.R.color.transparent)
                     item.gene_selet_item_right.setTextColor(color_black)
                 } else {
-                    item.gene_selet_item_right.setBackgroundColor(resources.getColor(R.color.colorPrimary, null))
+                    item.gene_selet_item_right.setBackgroundColor(resources.getColor(R.color.colorPrimary))
                     item.gene_selet_item_right.setTextColor(color_white)
                     item.gene_selet_item_left.setBackgroundColor(android.R.color.transparent)
                     item.gene_selet_item_left.setTextColor(color_black)
@@ -89,7 +89,7 @@ class GeneSelectActivity : AppCompatActivity() {
             for (gene in genes) {
                 val arr: Array<Int> = it.tag as Array<Int>
                 if (arr[0] == gene.left && arr[1] == gene.right) {
-                    it.setBackgroundColor(resources.getColor(R.color.colorPrimary, null))
+                    it.setBackgroundColor(resources.getColor(R.color.colorPrimary))
                     it.setTextColor(color_white)
                 }
             }

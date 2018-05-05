@@ -235,7 +235,7 @@ class GeneTool {
             arrayOf(TYPE0, "giant", "巨人"),
             arrayOf(TYPE0, "tangelo", "橘柚"),
             arrayOf(TYPE0, "lemon_frost", "柠檬霜"),
-            
+
             arrayOf(TYPE1, "white_yellow", "白黄"),
             arrayOf(TYPE1, "enigma", "谜"),
             arrayOf(TYPE1, "pastel", "蜡笔"),

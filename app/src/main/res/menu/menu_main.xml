@@ -1,0 +1,30 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".main.activity.MainActivity">
+    <item
+        android:id="@+id/add"
+        android:orderInCategory="100"
+        android:title="新建"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/write"
+        android:orderInCategory="100"
+        android:title="导出水印图"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/save"
+        android:orderInCategory="100"
+        android:title="重新保存"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/shortcut"
+        android:orderInCategory="100"
+        android:title="截图"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/flags"
+        android:orderInCategory="100"
+        android:title="移位"
+        app:showAsAction="never" />
+</menu>

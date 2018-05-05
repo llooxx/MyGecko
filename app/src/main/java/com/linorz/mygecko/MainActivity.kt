@@ -1,75 +1,170 @@
 package com.linorz.mygecko
 
-import android.app.Activity
+import android.annotation.SuppressLint
 import android.content.Intent
-import android.support.v7.app.AppCompatActivity
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.os.Bundle
-import com.linorz.mygecko.tools.GeneTool
-import kotlinx.android.synthetic.main.activity_main.*
+import android.support.v7.app.AppCompatActivity
+import android.support.v7.widget.DefaultItemAnimator
+import android.support.v7.widget.GridLayoutManager
+import android.widget.Toast
+import com.linorz.mygecko.tools.StaticMethod
+import kotlinx.android.synthetic.main.activity_geckos.*
+import java.io.File
+import android.provider.MediaStore
+import android.content.ContentValues
+import android.content.Context
+import android.content.SharedPreferences
+import com.google.gson.Gson
+import android.R.menu
+import android.os.Handler
+import android.os.Message
+import android.support.v7.widget.RecyclerView
+import android.view.Menu
+import android.view.MenuItem
 
+
+/**
+ * Created by linorz on 2018/3/2.
+ */
 class MainActivity : AppCompatActivity() {
-    private val SELECT_FATHER_GENE_CODE = 1
-    private val SELECT_MOTHER_GENE_CODE = 2
-    var father_genes: ArrayList<GeneTool.SpecificGene> = arrayListOf()
-    var mother_genes: ArrayList<GeneTool.SpecificGene> = arrayListOf()
+    private lateinit var list: ArrayList<GeckoGson.GeckoBean>
+    private lateinit var adapter: GeckoAdapter
+    private lateinit var editor: SharedPreferences.Editor
+    var mHandler: Handler = @SuppressLint("HandlerLeak")
+    object : Handler() {
+        override fun dispatchMessage(msg: android.os.Message) {
+            when (msg.what) {
+                1 -> StaticMethod.makeText(baseContext, msg.obj.toString() + "完成", Toast.LENGTH_SHORT)
+                else -> {
+                    StaticMethod.makeText(baseContext, "完成", Toast.LENGTH_SHORT)
+                }
+            }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
-
-        main_select_father_gene_btn.setOnClickListener {
-            val intent = Intent(this, GeneSelectActivity::class.java)
-            intent.putExtra("code", SELECT_FATHER_GENE_CODE)
-            intent.putParcelableArrayListExtra("genes", father_genes)
-            startActivityForResult(intent, SELECT_FATHER_GENE_CODE)
-        }
-        main_select_mother_gene_btn.setOnClickListener {
-            val intent = Intent(this, GeneSelectActivity::class.java)
-            intent.putExtra("code", SELECT_MOTHER_GENE_CODE)
-            intent.putParcelableArrayListExtra("genes", mother_genes)
-            startActivityForResult(intent, SELECT_MOTHER_GENE_CODE)
         }
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        if (resultCode == Activity.RESULT_OK) when (requestCode) {
-            SELECT_FATHER_GENE_CODE -> {
-                father_genes = data!!.getParcelableArrayListExtra("genes")
-                main_select_father_gene_btn.text = GeneTool().getInstance().printGenesCh(father_genes)
-            }
-            SELECT_MOTHER_GENE_CODE -> {
-                mother_genes = data!!.getParcelableArrayListExtra("genes")
-                main_select_mother_gene_btn.text = GeneTool().getInstance().printGenesCh(mother_genes)
-            }
-        }
-        if (father_genes.isNotEmpty() && mother_genes.isNotEmpty()) {
-            val probability_list = arrayListOf<Double>()
-            val str_list = arrayListOf<String>()
-            //获得子基因
-            GeneTool().getInstance().getGeneration(father_genes, mother_genes).forEach {
-                probability_list.add(it.probability)
-                str_list.add(GeneTool().getInstance().printGenesCh(it.list_genes) + "\n\n")
-            }
-            //合并相同基因
-            var i = 0
-            while (i < str_list.size) {
-                var j = i + 1
-                while (j < str_list.size) {
-                    if (str_list[i] == str_list[j]) {
-                        probability_list[i] = probability_list[i] + probability_list[j]
-                        probability_list.removeAt(j)
-                        str_list.removeAt(j)
-                    }
-                    j++
-                }
-                i++
-            }
-            var str = ""
-            for (i in 0 until str_list.size)
-                str += (probability_list[i] * 100).toString() + "% " + str_list[i]
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_geckos)
 
-            main_chid_gene.text = str
+        StaticMethod.requestPermissions(this)
+        StaticMethod.initSomthing(this)
+
+        setSupportActionBar(toolbar)
+
+        editor = this.getSharedPreferences("MyGecko", Context.MODE_PRIVATE).edit()
+        list = StaticMethod.getGeckoList(baseContext) as ArrayList<GeckoGson.GeckoBean>
+        adapter = GeckoAdapter(this.baseContext, list)
+        geckos_recycler.layoutManager = GridLayoutManager(baseContext, 4)
+        geckos_recycler.itemAnimator = DefaultItemAnimator()
+        geckos_recycler.adapter = adapter
+    }
+
+    override fun onResume() {
+        super.onResume()
+        update()
+    }
+
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        setIntent(intent)
+    }
+
+    private fun update() {
+//        geckos_recycler.adapter = adapter
+        val action: Int = intent.getIntExtra("action", 0)
+        val position: Int = intent.getIntExtra("position", -1)
+        when (action) {
+        //没改变
+            0 -> {
+
+            }
+        //新建
+            1 -> {
+                val list2 = StaticMethod.getGeckoList(baseContext)
+                list.add(list2[list2.size - 1])
+                adapter.notifyItemInserted(list.size - 1)
+            }
+        //编辑
+            2 -> {
+                val list2 = StaticMethod.getGeckoList(baseContext)
+                list[position] = list2[position]
+                adapter.notifyItemChanged(position)
+            }
+        //删除
+            3 -> {
+                list.removeAt(position)
+                adapter.notifyItemRemoved(position)
+            }
         }
+        intent.putExtra("action", 0)
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        menuInflater.inflate(R.menu.menu_main, menu)
+        return true
+    }
+
+    @SuppressLint("ShowToast")
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            R.id.add -> {
+                startActivity(Intent(this, GeckoDetailEditActivity::class.java))
+            }
+            R.id.write -> {
+                Thread({
+                    val geckos = StaticMethod.getGeckoList(baseContext)
+                    for (i in 0 until geckos.size) {
+                        val it = geckos[i]
+                        if (it.picture == null || (it.picture != null && it.picture.isEmpty()))
+                            continue
+                        val file = File(DealFile.getFilePath() + "/水印")
+                        if (!file.exists())
+                            file.mkdir()
+                        val src: Bitmap = BitmapFactory.decodeFile(DealFile.getFilePath() + "/" +
+                                it.picture)
+                        val str = "编号（临时）:" + it.num + "\n" +
+                                "基因:" + it.kind + "\n" +
+                                "性别:" + it.gender + "\n" +
+                                "出生日:" + it.birth + "\n" +
+                                "位置:" + (i / 4 + 1) + "排"
+
+                        val dst = StaticMethod.writeOnBitmap(this, src, str)
+                        val name: String = "Linorz" + it.picture
+                        StaticMethod.saveBitmapToSDCard(dst, file.absolutePath, name)
+                        src.recycle()
+                        dst.recycle()
+                        val values = ContentValues()
+                        values.put(MediaStore.Images.Media.DATA, file.absolutePath + "/" + name)
+                        values.put(MediaStore.Images.Media.DISPLAY_NAME, name)
+                        contentResolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values)
+                        mHandler.sendMessage(Message.obtain(mHandler, 1, it.num))
+                    }
+
+                }).start()
+            }
+            R.id.save -> {
+                StaticMethod.saveGeckoLIst(list, editor)
+                list = StaticMethod.getGeckoList(baseContext) as ArrayList<GeckoGson.GeckoBean>
+                adapter = GeckoAdapter(baseContext, list)
+                geckos_recycler.adapter = adapter
+            }
+            R.id.shortcut -> {
+                val bitmap = StaticMethod.shotRecyclerView(geckos_recycler)
+                val file = File(DealFile.getFilePath() + "/截图")
+                if (!file.exists())
+                    file.mkdir()
+                StaticMethod.saveBitmapToSDCard(bitmap, file.absolutePath, "all.jpg")
+                mHandler.sendEmptyMessage(0)
+            }
+            R.id.flags -> {
+                geckos_recycler.setItemTouchHelper(list, true) {
+                    StaticMethod.saveGeckoLIst(list, editor)
+                }
+            }
+        }
+        return true
     }
 }
